@@ -33,9 +33,18 @@ mac:
   icon: resources/icon.icns
   mergeASARs: false
   x64ArchFiles: "{Contents/Resources/ffmpeg-installer/**/*,Contents/Resources/app.asar.unpacked/node_modules/peasyo-sdl-lib/**/*}"
-  target: 
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: resources/entitlements.mac.plist
+  entitlementsLoginHelper: resources/entitlements.mac.plist
+  extendInfo:
+    NSLocalNetworkUsageDescription: PeaSyo4Desk needs local network access to discover and connect to your PS5 console on the same network.
+  # 启用公证:在 CI 中设置 APPLE_ID、APPLE_APP_SPECIFIC_PASSWORD、TEAM_ID 后取消下面注释
+  # notarize:
+  #   teamId: ${TEAM_ID}
+  target:
   - target: dmg
-    arch: 
+    arch:
     - universal
 
 # Config for OSX dmg
