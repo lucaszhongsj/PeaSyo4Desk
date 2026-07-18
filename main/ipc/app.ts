@@ -858,6 +858,48 @@ const resolveHostInfo = async (rawHost: string) => {
   };
 };
 
+// 探测去往目标 IP 时本机应使用的源地址，用于锁定 UDP 出口接口。
+// 解决多网卡 / VPN 抢路由场景下，唤醒包从错误接口发出导致 EHOSTUNREACH 的问题。
+const resolveSourceAddress = (targetHost: string, ipFamily: number): Promise<string | null> => {
+  return new Promise((resolve) => {
+    const socketType = ipFamily === 6 ? "udp6" : "udp4";
+    const socket = dgram.createSocket(socketType);
+
+    const cleanup = () => {
+      try {
+        socket.close();
+      } catch {
+        // ignore
+      }
+    };
+
+    const handleResult = (address: string | null) => {
+      cleanup();
+      resolve(address);
+    };
+
+    // 用 connected UDP socket 让内核根据目标地址选定出口接口并返回源地址。
+    // 对 UDP 来说 connect 不发包，只触发路由查找。
+    socket.connect(WAKEUP_PORT, targetHost, () => {
+      try {
+        const address = socket.address();
+        if (address && typeof address.address === "string") {
+          handleResult(address.address);
+        } else {
+          handleResult(null);
+        }
+      } catch {
+        handleResult(null);
+      }
+    });
+
+    socket.once("error", () => handleResult(null));
+
+    // 兜底：connect 在极少数情况下可能挂起，超时强制释放
+    setTimeout(() => handleResult(null), 1000).unref();
+  });
+};
+
 const sendWakeupDatagram = async (
   rawHost: string,
   userCredential: string | number,
@@ -873,6 +915,21 @@ const sendWakeupDatagram = async (
   const socketType = ipFamily === 6 ? "udp6" : "udp4";
   const socket = dgram.createSocket(socketType);
   const payload = Buffer.from(buildWakeupMessage(userCredential), "utf-8");
+
+  const sourceAddress = await resolveSourceAddress(targetHost, ipFamily);
+  if (sourceAddress) {
+    try {
+      await new Promise<void>((resolveBind, rejectBind) => {
+        socket.once("error", rejectBind);
+        socket.bind(0, sourceAddress, () => {
+          socket.removeListener("error", rejectBind);
+          resolveBind();
+        });
+      });
+    } catch {
+      // 绑定失败则降级为系统自动选路，不阻断唤醒流程。
+    }
+  }
 
   return new Promise((resolve, reject) => {
     let finished = false;
