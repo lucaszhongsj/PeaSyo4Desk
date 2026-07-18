@@ -29,7 +29,7 @@ const isWebcodecDefaultPlatform = () => {
 };
 
 export const defaultSettings = {
-  locale: "en",
+  locale: "zh",
   fullscreen: false,
   video_format: "default",
   resolution: 1080,
@@ -62,43 +62,40 @@ export const defaultSettings = {
   log_verbose: false,
   keyboard: false,
   input_mousekeyboard_maping: {
-    ArrowLeft: 'DPadLeft',
-    ArrowUp: 'DPadUp',
-    ArrowRight: 'DPadRight',
-    ArrowDown: 'DPadDown',
+    'ArrowLeft': 'DPadLeft',
+    'ArrowUp': 'DPadUp',
+    'ArrowRight': 'DPadRight',
+    'ArrowDown': 'DPadDown',
 
-    Enter: 'A',
-    k: 'A',
+    'Enter': 'A',
+    'Backspace': 'B',
 
-    Backspace: 'B',
-    l: 'B',
-
-    j: 'X',
-    i: 'Y',
-
-    '2': 'LeftShoulder',
-    '3': 'RightShoulder',
+    'j': 'X',
+    'k': 'A',
+    'l': 'B',
+    'i': 'Y',
 
     '1': 'LeftTrigger',
-    '4': 'RightTrigger',
-
-    '5': 'LeftThumb',
-    '6': 'RightThumb',
+    '2': 'LeftShoulder',
+    '0': 'RightTrigger',
+    '9': 'RightShoulder',
 
     'a': 'LeftThumbXAxisPlus',
+    's': 'LeftThumbYAxisMinus',
     'd': 'LeftThumbXAxisMinus',
     'w': 'LeftThumbYAxisPlus',
-    's': 'LeftThumbYAxisMinus',
+    'q': 'LeftThumb',
 
     'f': 'RightThumbXAxisPlus',
+    'g': 'RightThumbYAxisMinus',
     'h': 'RightThumbXAxisMinus',
     'r': 'RightThumbYAxisPlus',
-    'g': 'RightThumbYAxisMinus',
+    'y': 'RightThumb',
 
-    't': 'Touchpad',
-    v: 'View',
-    m: 'Menu',
-    n: 'Nexus',
+    'b': 'Touchpad',
+    'v': 'View',
+    'm': 'Menu',
+    'n': 'Nexus',
   },
   use_vulkan: false,
   fsr: false,
